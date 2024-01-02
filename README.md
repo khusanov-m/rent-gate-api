@@ -8,11 +8,9 @@ BISP Project - Diploma Work for WIUT - Web Application
 
 Prerequisites:
 
-> PostgreSQL 16 or newer.
-
-> Docker Desktop 4.26.1.
-
-> Populate .env file with your own values (filename should be -> app.env).
+- PostgreSQL 16 or newer.
+- Docker Desktop 4.26.1.
+- Populate .env file with your own values (filename should be -> app.env).
 
 1. [install Go](https://go.dev/) (v1.21.4 at 01.01.2024)
 2. Open terminal at root folder and run:
@@ -22,7 +20,7 @@ go mod tidy
 go run .
 ```
 
-3. Open browser at http://localhost:<ENV PORT>
+3. Open browser at http://localhost:8000 (your own port from .env file)
 
 ---
 
