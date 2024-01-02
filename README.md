@@ -10,6 +10,7 @@ Prerequisites:
 
 > PostgreSQL 16 or newer
 > Docker Desktop 4.26.1
+> Populate .env file with your own values (filename should be -> app.env)
 
 1. [install Go](https://go.dev/) (v1.21.4 at 01.01.2024)
 2. Open terminal at root folder and run:
