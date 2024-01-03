@@ -18,6 +18,20 @@ func init() {
 }
 
 func main() {
-	initializers.DB.AutoMigrate(&models.User{})
+	err := initializers.DB.AutoMigrate(
+		&models.User{},
+		&models.Role{},
+		&models.VehicleCategory{},
+		&models.Vehicle{},
+		&models.Location{},
+		&models.Rental{},
+		&models.Subscription{},
+		&models.InsuranceOption{},
+		&models.VehicleInsurance{},
+		&models.LoyaltyProgram{},
+	)
+	if err != nil {
+		panic("failed to auto-migrate")
+	}
 	fmt.Println("? Migration complete")
 }
