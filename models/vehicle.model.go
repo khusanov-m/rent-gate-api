@@ -24,3 +24,15 @@ type Vehicle struct {
 	Rentals           []Rental           `gorm:"foreignkey:VehicleID"`
 	VehicleInsurances []VehicleInsurance `gorm:"foreignkey:VehicleID"`
 }
+
+type VehicleResponse struct {
+	ID           uuid.UUID `json:"id,omitempty"`
+	OwnerID      uint      `json:"owner_id,omitempty"`
+	CategoryID   uint      `json:"category_id,omitempty"`
+	LocationID   uint      `json:"location_id,omitempty"`
+	Status       string    `json:"status,omitempty"`
+	PricePerHour float64   `json:"price_per_hour,omitempty"`
+	PricePerDay  float64   `json:"price_per_day,omitempty"`
+	CreatedAt    time.Time `json:"created_at,omitempty"`
+	UpdatedAt    time.Time `json:"updated_at,omitempty"`
+}

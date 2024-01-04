@@ -80,5 +80,4 @@ func SendEmail(user *models.User, data *EmailData, emailTemp string) {
 	if err := d.DialAndSend(m); err != nil {
 		log.Fatal("Could not send email: ", err)
 	}
-
 }

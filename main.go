@@ -18,6 +18,9 @@ var (
 
 	UserController      controllers.UserController
 	UserRouteController routes.UserRouteController
+
+	VehiclesController      controllers.VehicleController
+	VehiclesRouteController routes.VehicleRouteController
 )
 
 func init() {
@@ -33,6 +36,9 @@ func init() {
 
 	UserController = controllers.NewUserController(initializers.DB)
 	UserRouteController = routes.NewRouteUserController(UserController)
+
+	VehiclesController = controllers.NewVehicleController(initializers.DB)
+	VehiclesRouteController = routes.NewRouteVehicleController(VehiclesController)
 
 	server = gin.Default()
 }
@@ -50,12 +56,12 @@ func main() {
 	server.Use(cors.New(corsConfig))
 
 	router := server.Group("/api/v1")
-	router.GET("/healthchecker", func(ctx *gin.Context) {
-		message := "Welcome to Golang with Gorm and Postgres"
-		ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": message})
+	router.GET("/ping", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": "pong"})
 	})
 
 	AuthRouteController.AuthRoute(router)
 	UserRouteController.UserRoute(router)
+	VehiclesRouteController.VehicleRoute(router)
 	log.Fatal(server.Run(":" + config.ServerPort))
 }
