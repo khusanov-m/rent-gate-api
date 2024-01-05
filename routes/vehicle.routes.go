@@ -16,6 +16,7 @@ func NewRouteVehicleController(vehicleController controllers.VehicleController) 
 
 func (vc *VehicleRouteController) VehicleRoute(rg *gin.RouterGroup) {
 	router := rg.Group("/vehicles")
+	router.Use(middleware.DeserializeUser())
 	router.GET("/", middleware.Authenticate(), vc.vehicleController.GetVehicles)
 	router.GET("/:id", middleware.Authenticate(), vc.vehicleController.GetVehicleByID)
 }

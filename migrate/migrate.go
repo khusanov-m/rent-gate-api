@@ -29,6 +29,7 @@ func main() {
 		&models.InsuranceOption{},
 		&models.VehicleInsurance{},
 		&models.LoyaltyProgram{},
+		&models.Post{},
 	)
 	if err != nil {
 		panic("failed to auto-migrate")

@@ -19,14 +19,15 @@ type User struct {
 	VerificationCode   string    `gorm:"type:varchar(255)"`
 	PasswordResetToken string    `gorm:"type:varchar(255)"`
 	PasswordResetAt    time.Time
-	Verified           bool           `gorm:"not null"`
-	CreatedAt          time.Time      `gorm:"not null"`
-	UpdatedAt          time.Time      `gorm:"not null"`
-	DeletedAt          gorm.DeletedAt `gorm:"index"`
-	Vehicles           []Vehicle      `gorm:"foreignkey:OwnerID"`
-	Rentals            []Rental       `gorm:"foreignkey:UserID"`
-	Subscription       Subscription   `gorm:"foreignkey:UserID"`
-	LoyaltyProgram     LoyaltyProgram `gorm:"foreignkey:UserID"`
+	Verified           bool            `gorm:"not null"`
+	CreatedAt          time.Time       `gorm:"not null"`
+	UpdatedAt          time.Time       `gorm:"not null"`
+	DeletedAt          gorm.DeletedAt  `gorm:"index"`
+	Vehicles           []Vehicle       `gorm:"foreignkey:OwnerID"`
+	Rentals            []Rental        `gorm:"foreignkey:UserID"`
+	Subscription       *Subscription   `gorm:"foreignkey:UserID"`
+	LoyaltyProgram     *LoyaltyProgram `gorm:"foreignkey:UserID"`
+	Posts              []Post          `gorm:"foreignkey:UserID"`
 }
 
 type SignUpInput struct {
@@ -43,19 +44,21 @@ type SignInInput struct {
 }
 
 type UserResponse struct {
-	ID             uuid.UUID      `json:"id,omitempty"`
-	Name           string         `json:"name,omitempty"`
-	Email          string         `json:"email,omitempty"`
-	Role           string         `json:"role,omitempty"`
-	Photo          string         `json:"photo,omitempty"`
-	Provider       string         `json:"provider"`
-	CreatedAt      time.Time      `json:"created_at"`
-	UpdatedAt      time.Time      `json:"updated_at"`
-	Verfied        bool           `json:"verified"`
-	Vehicles       []Vehicle      `json:"vehicles,omitempty"`
-	Rentals        []Rental       `json:"rentals,omitempty"`
-	Subscription   Subscription   `json:"subscription,omitempty"`
-	LoyaltyProgram LoyaltyProgram `json:"loyalty_program,omitempty"`
+	ID             uint            `json:"id,omitempty"`
+	UUID           uuid.UUID       `json:"uuid,omitempty"`
+	Name           string          `json:"name,omitempty"`
+	Email          string          `json:"email,omitempty"`
+	Role           string          `json:"role,omitempty"`
+	Photo          string          `json:"photo,omitempty"`
+	Provider       string          `json:"provider"`
+	CreatedAt      time.Time       `json:"created_at"`
+	UpdatedAt      time.Time       `json:"updated_at"`
+	Verfied        bool            `json:"verified"`
+	Vehicles       []Vehicle       `json:"vehicles,omitempty"`
+	Rentals        []Rental        `json:"rentals,omitempty"`
+	Subscription   *Subscription   `json:"subscription,omitempty"`
+	LoyaltyProgram *LoyaltyProgram `json:"loyalty_program,omitempty"`
+	Posts          []Post          `json:"posts,omitempty"`
 }
 
 // ? ForgotPasswordInput struct
