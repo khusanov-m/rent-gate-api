@@ -14,5 +14,4 @@ type Role struct {
 	CreatedAt time.Time      `gorm:"not null"`
 	UpdatedAt time.Time      `gorm:"not null"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	// Users     []User
 }

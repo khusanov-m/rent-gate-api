@@ -14,8 +14,8 @@ type Subscription struct {
 	StartDate  time.Time
 	EndDate    time.Time
 	MonthlyFee float64
-	CreatedAt  time.Time       `gorm:"not null"`
-	UpdatedAt  time.Time       `gorm:"not null"`
-	DeletedAt  gorm.DeletedAt  `gorm:"index"`
-	User       *User `gorm:"foreignkey:UserID"`
+	CreatedAt  time.Time      `gorm:"not null"`
+	UpdatedAt  time.Time      `gorm:"not null"`
+	DeletedAt  gorm.DeletedAt `gorm:"index"`
+	User       *User          `gorm:"foreignkey:UserID" json:"user,omitempty"`
 }

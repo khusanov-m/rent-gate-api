@@ -4,27 +4,28 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
+// PostSchema
 type Post struct {
-	ID        uint      `gorm:"primaryKey;autoIncrement"`
-	UUID      uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();uniqueIndex" json:"uuid,omitempty"`
-	Title     string    `gorm:"uniqueIndex;not null" json:"title,omitempty"`
-	Content   string    `gorm:"not null" json:"content,omitempty"`
-	Image     string    `gorm:"not null" json:"image,omitempty"`
-	CreatedAt time.Time `gorm:"not null" json:"created_at,omitempty"`
-	UpdatedAt time.Time `gorm:"not null" json:"updated_at,omitempty"`
-	UserID    uint      `gorm:"not null" json:"user_id,omitempty"`
-	// User      *User     `gorm:"foreignkey:UserID" json:"user,omitempty"`
+	ID        uint           `gorm:"primaryKey;autoIncrement" json:"id,omitempty"`
+	UUID      uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();uniqueIndex" json:"uuid,omitempty"`
+	Title     string         `gorm:"uniqueIndex;not null"`
+	Content   string         `gorm:"not null"`
+	Image     string         `gorm:"not null"`
+	CreatedAt time.Time      `gorm:"not null"`
+	UpdatedAt time.Time      `gorm:"not null"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+
+	UserID uint
+	User   *User `gorm:"foreignkey:UserID" json:"user,omitempty"`
 }
 
 type CreatePostInput struct {
-	Title     string    `json:"title"  binding:"required"`
-	Content   string    `json:"content" binding:"required"`
-	Image     string    `json:"image" binding:"required"`
-	User      string    `json:"user,omitempty"`
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	Title   string `json:"title"  binding:"required"`
+	Content string `json:"content" binding:"required"`
+	Image   string `json:"image" binding:"required"`
 }
 
 type UpdatePostInput struct {
@@ -34,9 +35,9 @@ type UpdatePostInput struct {
 }
 
 type PostResponse struct {
-	UUID    uuid.UUID `json:"uuid,omitempty"`
-	Title   string    `json:"title,omitempty"`
-	Content string    `json:"content,omitempty"`
-	Image   string    `json:"image,omitempty"`
-	User    *User     `json:"user,omitempty"`
+	ID      uuid.UUID     `json:"id,omitempty"`
+	Title   string        `json:"title,omitempty"`
+	Content string        `json:"content,omitempty"`
+	Image   string        `json:"image,omitempty"`
+	User    *UserResponse `json:"user,omitempty"`
 }
