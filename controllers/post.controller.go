@@ -1,5 +1,7 @@
 package controllers
 
+// CAN PRELOAD: Vehicles,Rentals,Subscription,LoyaltyProgram,Posts
+
 import (
 	"net/http"
 	"strings"
@@ -17,6 +19,10 @@ type PostController struct {
 
 func NewPostController(DB *gorm.DB) PostController {
 	return PostController{DB}
+}
+
+var postsAllowedEntities utils.PreloadEntities = utils.PreloadEntities{
+	"User": true,
 }
 
 // [...] Create Post Handler
@@ -96,22 +102,15 @@ func (pc *PostController) UpdatePostInput(ctx *gin.Context) {
 func (pc *PostController) FindPostById(ctx *gin.Context) {
 	postId := ctx.Param("postId")
 
+	query := utils.ApplyDynamicPreloading(pc.DB, ctx, postsAllowedEntities)
 	var post models.Post
-	// .Preload("User")
-	result := pc.DB.First(&post, "uuid = ?", postId)
+	result := query.First(&post, "uuid = ?", postId)
 	if result.Error != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No post with that title exists"})
 		return
 	}
 
-	postResponse := models.PostResponse{
-		UUID:    post.UUID,
-		Title:   post.Title,
-		Content: post.Content,
-		Image:   post.Image,
-		// User:    post.User,
-	}
-
+	postResponse := utils.MapPostToPostResponse(&post)
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": postResponse})
 }
 
@@ -123,23 +122,16 @@ func (pc *PostController) FindPosts(ctx *gin.Context) {
 		return
 	}
 
+	query := utils.ApplyDynamicPreloading(pc.DB, ctx, postsAllowedEntities) // posts?preload=User
+
 	var posts []models.Post
-	results := pc.DB.Limit(pagination.Limit).Offset(pagination.Offset).Find(&posts)
+	results := query.Limit(pagination.Limit).Offset(pagination.Offset).Find(&posts)
 	if results.Error != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": results.Error})
 		return
 	}
 
-	var postsResponse []models.PostResponse = make([]models.PostResponse, len(posts))
-	for i, post := range posts {
-		postsResponse[i] = models.PostResponse{
-			UUID:    post.UUID,
-			Title:   post.Title,
-			Content: post.Content,
-			Image:   post.Image,
-		}
-	}
-
+	postsResponse := utils.MapPostsToPostResponses(&posts)
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "results": len(posts), "data": postsResponse})
 }
 

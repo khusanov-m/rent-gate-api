@@ -37,9 +37,12 @@ func DeserializeUser() gin.HandlerFunc {
 			return
 		}
 
+		allowed := utils.PreloadEntities{
+			"Posts": true,
+		}
+		query := utils.ApplyDynamicPreloading(initializers.DB, ctx, allowed)
 		var user models.User
-		//.Preload("Subscription").Preload("LoyaltyProgram")
-		result := initializers.DB.Preload("Posts").First(&user, "id = ?", fmt.Sprint(sub))
+		result := query.First(&user, "id = ?", fmt.Sprint(sub))
 		if result.Error != nil {
 			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "fail", "message": "the user belonging to this token no logger exists"})
 			return
