@@ -42,17 +42,16 @@ func (ac *AuthController) SignUpUser(ctx *gin.Context) {
 		return
 	}
 
-	now := time.Now()
 	newUser := models.User{
 		Name:      payload.Name,
 		Email:     strings.ToLower(payload.Email),
 		Password:  hashedPassword,
 		Role:      "user",
 		Verified:  false,
-		Photo:     payload.Photo,
-		Provider:  "local",
-		CreatedAt: now,
-		UpdatedAt: now,
+		PhotoUrl:  payload.PhotoUrl,
+		Provider:  "web",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
 	result := ac.DB.Create(&newUser)
@@ -110,6 +109,22 @@ func (ac *AuthController) VerifyEmail(ctx *gin.Context) {
 
 	if updatedUser.Verified {
 		ctx.JSON(http.StatusConflict, gin.H{"status": "fail", "message": "User already verified"})
+		return
+	}
+
+	loyaltyInitResult := ac.DB.Create(models.LoyaltyAccount{
+		UserID:    updatedUser.ID,
+		Points:    0,
+		Status:    "Iron",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	})
+
+	if loyaltyInitResult.Error != nil && strings.Contains(loyaltyInitResult.Error.Error(), "duplicate key value violates unique") {
+		ctx.JSON(http.StatusConflict, gin.H{"status": "fail", "message": "User with that email already exists"})
+		return
+	} else if loyaltyInitResult.Error != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": "Something bad happened"})
 		return
 	}
 

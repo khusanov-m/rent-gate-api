@@ -21,14 +21,11 @@ func main() {
 	err := initializers.DB.AutoMigrate(
 		&models.User{},
 		&models.Role{},
-		&models.VehicleCategory{},
 		&models.Vehicle{},
 		&models.Location{},
 		&models.Rental{},
 		&models.Subscription{},
-		&models.InsuranceOption{},
-		&models.VehicleInsurance{},
-		&models.LoyaltyProgram{},
+		&models.LoyaltyAccount{},
 		&models.Post{},
 	)
 	if err != nil {

@@ -6,14 +6,14 @@ import (
 
 func MapUserToUserResponse(user *models.User) models.UserResponse {
 	// vehiclesResponse := MapVehiclesToVehicleResponses(&user.Vehicles)
-	postsResponse := MapPostsToPostResponses(&user.Posts)
+	// postsResponse := MapPostsToPostResponses(&user.Posts)
 
 	return models.UserResponse{
 		ID:        user.UUID,
 		Name:      user.Name,
 		Email:     user.Email,
 		Role:      user.Role,
-		Photo:     user.Photo,
+		PhotoUrl:  user.PhotoUrl,
 		Provider:  user.Provider,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
@@ -21,7 +21,7 @@ func MapUserToUserResponse(user *models.User) models.UserResponse {
 		// Vehicles:       vehiclesResponse,
 		// Subscription:   user.Subscription,
 		// LoyaltyProgram: user.LoyaltyProgram,
-		Posts: postsResponse,
+		// Posts: postsResponse,
 	}
 }
 
@@ -34,17 +34,17 @@ func MapVehiclesToVehicleResponses(vehicles *[]models.Vehicle) []models.VehicleR
 }
 func MapVehicleToVehicleResponse(vehicle *models.Vehicle) models.VehicleResponse {
 	return models.VehicleResponse{
-		ID:                vehicle.UUID,
-		UserID:            vehicle.UserID,
-		Status:            vehicle.Status,
-		PricePerHour:      vehicle.PricePerHour,
-		PricePerDay:       vehicle.PricePerDay,
-		CreatedAt:         vehicle.CreatedAt,
-		UpdatedAt:         vehicle.UpdatedAt,
-		Category:          vehicle.Category,
-		Location:          vehicle.Location,
-		Rentals:           vehicle.Rentals,
-		VehicleInsurances: vehicle.VehicleInsurances,
+		ID: vehicle.UUID,
+		// UserID:            vehicle.UserID,
+		// Status:            vehicle.Status,
+		PricePerHour: vehicle.PricePerHour,
+		PricePerDay:  vehicle.PricePerDay,
+		CreatedAt:    vehicle.CreatedAt,
+		UpdatedAt:    vehicle.UpdatedAt,
+		// Category:          vehicle.Category,
+		Location: vehicle.Location,
+		// Rentals:           vehicle.Rentals,
+		// VehicleInsurances: vehicle.VehicleInsurances,
 	}
 }
 
@@ -101,7 +101,7 @@ func MapUserToPreloadUserResponse(user *models.User) *models.UserResponse {
 		Name:     user.Name,
 		Email:    user.Email,
 		Role:     user.Role,
-		Photo:    user.Photo,
+		PhotoUrl: user.PhotoUrl,
 		Provider: user.Provider,
 		Verified: user.Verified,
 	}

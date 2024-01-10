@@ -39,9 +39,19 @@ func (vc *VehicleController) CreateVehicle(ctx *gin.Context) {
 	}
 
 	now := time.Now()
+
 	newVehicle := models.Vehicle{
-		UserID:       currentUser.ID,
-		Status:       payload.Status,
+		AvailabilityStatus: payload.AvailabilityStatus,
+		DriverOption:       payload.DriverOption,
+		NumberOfSeats:      payload.NumberOfSeats,
+		LuggageCapacity:    payload.LuggageCapacity,
+		VehicleType:        payload.VehicleType,
+		PowerType:          payload.PowerType,
+		OwnerType:          currentUser.Role,
+		OwnerID:            currentUser.ID,
+		SubscriptionTierID: payload.SubscriptionTierID,
+		ImageList:          payload.ImageList,
+
 		PricePerHour: payload.PricePerHour,
 		PricePerDay:  payload.PricePerDay,
 		CreatedAt:    now,
