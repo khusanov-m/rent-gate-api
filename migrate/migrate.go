@@ -20,7 +20,6 @@ func init() {
 func main() {
 	err := initializers.DB.AutoMigrate(
 		&models.User{},
-		&models.Role{},
 		&models.Vehicle{},
 		&models.Location{},
 		&models.Rental{},
