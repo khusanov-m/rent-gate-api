@@ -19,14 +19,14 @@ type User struct {
 	VerificationCode   string    `gorm:"type:varchar(255)"`
 	PasswordResetToken string    `gorm:"type:varchar(255)"`
 	PasswordResetAt    time.Time
-	Verified           bool            `gorm:"default:false;not null"`
+	Verified           bool `gorm:"default:false;not null"`
 
-	CreatedAt          time.Time       `gorm:"not null"`
-	UpdatedAt          time.Time       `gorm:"not null"`
-	DeletedAt          gorm.DeletedAt  `gorm:"index"`
+	CreatedAt time.Time      `gorm:"not null"`
+	UpdatedAt time.Time      `gorm:"not null"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 
-	Subscription       *Subscription   `gorm:"foreignkey:UserID"`
-	LoyaltyCard        *LoyaltyAccount `gorm:"foreignkey:UserID"`
+	Subscription   *Subscription   `gorm:"foreignkey:UserID"`
+	LoyaltyAccount *LoyaltyAccount `gorm:"foreignkey:UserID"`
 }
 
 type SignUpInput struct {
@@ -47,13 +47,13 @@ type UserResponse struct {
 	Name           string          `json:"name,omitempty"`
 	Email          string          `json:"email,omitempty"`
 	Role           string          `json:"role,omitempty"`
-	PhotoUrl       string          `json:"photo,omitempty"`
+	PhotoUrl       string          `json:"photo_url,omitempty"`
 	Provider       string          `json:"provider"`
+	Verified       bool            `json:"verified"`
 	CreatedAt      time.Time       `json:"created_at,omitempty"`
 	UpdatedAt      time.Time       `json:"updated_at,omitempty"`
-	Verified       bool            `json:"verified"`
 	Subscription   *Subscription   `json:"subscription,omitempty"`
-	LoyaltyProgram *LoyaltyAccount `json:"loyalty_account,omitempty"`
+	LoyaltyAccount *LoyaltyAccount `json:"loyalty_account,omitempty"`
 }
 
 type ForgotPasswordInput struct {

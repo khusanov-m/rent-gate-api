@@ -14,7 +14,7 @@ type Vehicle struct {
 	DriverOption       string    `gorm:"type:varchar(100);not null"` // WithDriver, WithoutDriver, Both
 	PricePerHour       float64   `gorm:"not null"`
 	PricePerDay        float64   `gorm:"not null"`
-	NumberOfSeats      uint16     `gorm:"not null"`
+	NumberOfSeats      uint16    `gorm:"not null"`
 	LuggageCapacity    float32   `gorm:"not null"`
 	VehicleType        string    `gorm:"type:varchar(100);not null"` // Car, Motorbike, Bicycle, Boat, Plane
 	PowerType          string    `gorm:"type:varchar(100);not null"` // Petrol, Diesel, Electric, Hybrid
@@ -26,7 +26,7 @@ type Vehicle struct {
 
 	OwnerType          string `gorm:"type:varchar(100);not null"` // User, Company
 	OwnerID            uint
-	Location           *Location `gorm:"foreignkey:VehicleID"`
+	Location           *Location `gorm:"foreignkey:Identification"`
 	SubscriptionTierID *uint
 }
 
@@ -36,7 +36,7 @@ type CreateVehicleInput struct {
 	DriverOption       string   `json:"driver_option" binding:"required"`
 	PricePerHour       float64  `json:"price_per_hour" binding:"required"`
 	PricePerDay        float64  `json:"price_per_day" binding:"required"`
-	NumberOfSeats      uint16    `json:"number_of_seats" binding:"required"`
+	NumberOfSeats      uint16   `json:"number_of_seats" binding:"required"`
 	LuggageCapacity    float32  `json:"luggage_capacity" binding:"required"`
 	VehicleType        string   `json:"vehicle_type" binding:"required"`
 	PowerType          string   `json:"power_type" binding:"required"`
@@ -53,7 +53,7 @@ type VehicleResponse struct {
 	DriverOption       string    `json:"driver_option,omitempty"`
 	PricePerHour       float64   `json:"price_per_hour,omitempty"`
 	PricePerDay        float64   `json:"price_per_day,omitempty"`
-	NumberOfSeats      uint16     `json:"number_of_seats,omitempty"`
+	NumberOfSeats      uint16    `json:"number_of_seats,omitempty"`
 	LuggageCapacity    float32   `json:"luggage_capacity,omitempty"`
 	VehicleType        string    `json:"vehicle_type,omitempty"`
 	PowerType          string    `json:"power_type,omitempty"`

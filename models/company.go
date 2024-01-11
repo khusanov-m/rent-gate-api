@@ -13,13 +13,13 @@ type Company struct {
 	Description string    `gorm:"type:text" json:"description,omitempty"`
 	Email       string    `gorm:"type:varchar(255);not null" json:"email,omitempty"`
 	Phone       string    `gorm:"type:varchar(255);not null" json:"phone,omitempty"`
-	Address     string    `gorm:"type:varchar(255);not null" json:"address,omitempty"`
 
 	CreatedAt time.Time      `gorm:"not null"`
 	UpdatedAt time.Time      `gorm:"not null"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	Vehicles []*Vehicle `gorm:"foreignKey:OwnerID" json:"vehicles,omitempty"`
+	Location *Location  `gorm:"foreignKey:Identification" json:"location,omitempty"`
 }
 
 type CompanyResponse struct {
@@ -31,4 +31,5 @@ type CompanyResponse struct {
 	Address     string    `json:"address,omitempty"`
 
 	Vehicles []*VehicleResponse `json:"vehicles,omitempty"`
+	Location *Location          `json:"location;omitempty"`
 }

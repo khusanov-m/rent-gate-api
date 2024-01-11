@@ -8,10 +8,10 @@ import (
 )
 
 type LoyaltyAccount struct {
-	ID        uint      `gorm:"primaryKey;autoIncrement"`
-	UUID      uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();uniqueIndex"`
-	UserID    uint      `gorm:"uniqueIndex;not null"`
-	Points    int
+	ID        uint           `gorm:"primaryKey;autoIncrement"`
+	UUID      uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();uniqueIndex"`
+	UserID    uint           `gorm:"uniqueIndex;not null"`
+	Points    uint           `gorm:"not null"`
 	Status    string         `gorm:"not null"`
 	CreatedAt time.Time      `gorm:"not null"`
 	UpdatedAt time.Time      `gorm:"not null"`

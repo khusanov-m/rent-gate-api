@@ -19,7 +19,7 @@ type Post struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	UserID uint
-	User   *User `gorm:"foreignkey:UserID" json:"user,omitempty"`
+	//User   *User `gorm:"foreignkey:UserID" json:"user,omitempty"`
 }
 
 type CreatePostInput struct {
