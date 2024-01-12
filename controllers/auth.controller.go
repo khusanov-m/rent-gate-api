@@ -48,7 +48,7 @@ func (ac *AuthController) SignUpUser(ctx *gin.Context) {
 		Password:  hashedPassword,
 		Role:      "user",
 		Verified:  false,
-		PhotoUrl:  payload.PhotoUrl,
+		Photo:     payload.Photo,
 		Provider:  "web",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),

@@ -21,11 +21,10 @@ func NewVehicleController(DB *gorm.DB) VehicleController {
 	return VehicleController{DB}
 }
 
-var vehicleAallowedEntities utils.PreloadEntities = utils.PreloadEntities{
-	"Rentals":           true,
-	"VehicleCategory":   true,
-	"Location":          true,
-	"VehicleInsurances": true,
+var vehicleAllowedEntities utils.PreloadEntities = utils.PreloadEntities{
+	"Location": true,
+	"Images":   true,
+	"User":     true,
 }
 
 // [...] Create Vehicle Handler
@@ -34,62 +33,71 @@ func (vc *VehicleController) CreateVehicle(ctx *gin.Context) {
 	var payload *models.CreateVehicleInput
 
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
-		ctx.JSON(http.StatusBadRequest, err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": err.Error()})
 		return
 	}
 
-	now := time.Now()
-
 	newVehicle := models.Vehicle{
-		AvailabilityStatus: payload.AvailabilityStatus,
-		DriverOption:       payload.DriverOption,
-		NumberOfSeats:      payload.NumberOfSeats,
-		LuggageCapacity:    payload.LuggageCapacity,
-		VehicleType:        payload.VehicleType,
-		PowerType:          payload.PowerType,
-		OwnerType:          currentUser.Role,
-		OwnerID:            currentUser.ID,
-		SubscriptionTierID: payload.SubscriptionTierID,
-		ImageList:          payload.ImageList,
+		IsAvailable:     payload.IsAvailable,
+		DriverOption:    payload.DriverOption,
+		NumberOfSeats:   payload.NumberOfSeats,
+		LuggageCapacity: payload.LuggageCapacity,
+		VehicleType:     payload.VehicleType,
+		PowerType:       payload.PowerType,
+		PricePerHour:    payload.PricePerHour,
+		PricePerDay:     payload.PricePerDay,
+		Currency:        payload.Currency,
 
-		PricePerHour: payload.PricePerHour,
-		PricePerDay:  payload.PricePerDay,
-		CreatedAt:    now,
-		UpdatedAt:    now,
+		OwnerType: currentUser.Role,
+		OwnerID:   currentUser.ID,
+
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
 	result := vc.DB.Create(&newVehicle)
 	if result.Error != nil && strings.Contains(result.Error.Error(), "duplicate key") {
-		ctx.JSON(http.StatusConflict, gin.H{"status": "fail", "message": "Vehicle with that title already exists"})
+		ctx.JSON(http.StatusConflict, gin.H{"status": "fail", "message": "Vehicle with that id already exists"})
 		return
 	} else if result.Error != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": result.Error.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "data": newVehicle})
+	for _, image := range payload.Images {
+		vehicleImage := models.VehicleImage{
+			VehicleID: newVehicle.ID,
+			ImageURL:  image.ImageURL,
+		}
+		vc.DB.Create(&vehicleImage)
+	}
+
+	newVehicleResponse := utils.MapVehicleToVehicleResponse(&newVehicle)
+	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "data": newVehicleResponse})
 }
 
 func (vc *VehicleController) GetVehicles(ctx *gin.Context) {
 	var vehicles []models.Vehicle
 
-	query := utils.ApplyDynamicPreloading(vc.DB, ctx, vehicleAallowedEntities)
+	query := utils.ApplyDynamicPreloading(vc.DB, ctx, vehicleAllowedEntities)
 
 	if err := query.Find(&vehicles).Error; err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": gin.H{"vehicles": vehicles}})
+	vehiclesResponse := utils.MapVehiclesToVehicleResponses(&vehicles)
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": gin.H{"vehicles": vehiclesResponse}})
 }
 
 func (vc *VehicleController) GetVehicleByID(ctx *gin.Context) {
 	var vehicle models.Vehicle
 	id := ctx.Param("id")
 
-	query := utils.ApplyDynamicPreloading(vc.DB, ctx, vehicleAallowedEntities)
+	query := utils.ApplyDynamicPreloading(vc.DB, ctx, vehicleAllowedEntities)
 
-	if err := query.Where("uuid = ?", id).Preload("User").First(&vehicle).Error; err != nil {
+	if err := query.Where("uuid = ?", id).First(&vehicle).Error; err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": err.Error()})
 		return
 	}

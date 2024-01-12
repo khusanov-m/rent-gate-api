@@ -13,7 +13,7 @@ func MapUserToUserResponse(user *models.User) models.UserResponse {
 		Name:      user.Name,
 		Email:     user.Email,
 		Role:      user.Role,
-		PhotoUrl:  user.PhotoUrl,
+		Photo:     user.Photo,
 		Provider:  user.Provider,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
@@ -33,76 +33,79 @@ func MapVehiclesToVehicleResponses(vehicles *[]models.Vehicle) []models.VehicleR
 	return vehiclesResponse
 }
 func MapVehicleToVehicleResponse(vehicle *models.Vehicle) models.VehicleResponse {
+	vehicleImagesResponse := MapVehicleImagesToVehicleImagesResponse(&vehicle.Images)
+
 	return models.VehicleResponse{
-		ID: vehicle.UUID,
-		// UserID:            vehicle.UserID,
-		// Status:            vehicle.Status,
-		PricePerHour: vehicle.PricePerHour,
-		PricePerDay:  vehicle.PricePerDay,
-		CreatedAt:    vehicle.CreatedAt,
-		UpdatedAt:    vehicle.UpdatedAt,
-		// Category:          vehicle.Category,
-		Location: vehicle.Location,
-		// Rentals:           vehicle.Rentals,
-		// VehicleInsurances: vehicle.VehicleInsurances,
+		ID:              vehicle.UUID,
+		PricePerHour:    vehicle.PricePerHour,
+		PricePerDay:     vehicle.PricePerDay,
+		CreatedAt:       vehicle.CreatedAt,
+		UpdatedAt:       vehicle.UpdatedAt,
+		Location:        vehicle.Location,
+		IsAvailable:     vehicle.IsAvailable,
+		DriverOption:    vehicle.DriverOption,
+		NumberOfSeats:   vehicle.NumberOfSeats,
+		LuggageCapacity: vehicle.LuggageCapacity,
+		VehicleType:     vehicle.VehicleType,
+		PowerType:       vehicle.PowerType,
+		Currency:        vehicle.Currency,
+		OwnerType:       vehicle.OwnerType,
+		OwnerID:         vehicle.OwnerID,
+		Images:          *vehicleImagesResponse,
 	}
 }
 
-func MapRentalsToRentalResponses(rentals *[]models.Rental) []models.RentalResponse {
-	rentalsResponse := make([]models.RentalResponse, len(*rentals))
-	for i, rental := range *rentals {
-		rentalsResponse[i] = MapRentalToRentalResponse(&rental)
-	}
-	return rentalsResponse
-}
-func MapRentalToRentalResponse(rental *models.Rental) models.RentalResponse {
-	return models.RentalResponse{
-		ID:         rental.UUID,
-		VehicleID:  rental.VehicleID,
-		StartDate:  rental.StartDate,
-		EndDate:    rental.EndDate,
-		TotalPrice: rental.TotalPrice,
-		CreatedAt:  rental.CreatedAt,
-		UpdatedAt:  rental.UpdatedAt,
-	}
-}
+//func MapPostsToPostResponses(posts *[]models.Post) []models.PostResponse {
+//	postsResponses := make([]models.PostResponse, len(*posts))
+//	for i, post := range *posts {
+//		postsResponses[i] = MapPostToPostResponse(&post)
+//	}
+//	return postsResponses
+//}
+//func MapPostToPostResponse(post *models.Post) models.PostResponse {
+//	if post.User != nil {
+//		userResponse := MapUserToPreloadUserResponse(post.User)
+//
+//		return models.PostResponse{
+//			ID:      post.UUID,
+//			Title:   post.Title,
+//			Content: post.Content,
+//			Image:   post.Image,
+//			User:    userResponse,
+//		}
+//	}
+//
+//	return models.PostResponse{
+//		ID:      post.UUID,
+//		Title:   post.Title,
+//		Content: post.Content,
+//		Image:   post.Image,
+//	}
+//}
 
-func MapPostsToPostResponses(posts *[]models.Post) []models.PostResponse {
-	postsResponses := make([]models.PostResponse, len(*posts))
-	for i, post := range *posts {
-		postsResponses[i] = MapPostToPostResponse(&post)
+//func MapUserToPreloadUserResponse(user *models.User) *models.UserResponse {
+//	return &models.UserResponse{
+//		ID:       user.UUID,
+//		Name:     user.Name,
+//		Email:    user.Email,
+//		Role:     user.Role,
+//		Photo:    user.Photo,
+//		Provider: user.Provider,
+//		Verified: user.Verified,
+//	}
+//}
+
+func MapVehicleImagesToVehicleImagesResponse(vehicleImages *[]models.VehicleImage) *[]models.VehicleImageResponse {
+	vehicleImagesResponse := make([]models.VehicleImageResponse, len(*vehicleImages))
+	for i, image := range *vehicleImages {
+		vehicleImagesResponse[i] = *MapVehicleImageToVehicleImageResponse(&image)
 	}
-	return postsResponses
+	return &vehicleImagesResponse
 }
-func MapPostToPostResponse(post *models.Post) models.PostResponse {
-	if post.User != nil {
-		userResponse := MapUserToPreloadUserResponse(post.User)
-
-		return models.PostResponse{
-			ID:      post.UUID,
-			Title:   post.Title,
-			Content: post.Content,
-			Image:   post.Image,
-			User:    userResponse,
-		}
-	}
-
-	return models.PostResponse{
-		ID:      post.UUID,
-		Title:   post.Title,
-		Content: post.Content,
-		Image:   post.Image,
-	}
-}
-
-func MapUserToPreloadUserResponse(user *models.User) *models.UserResponse {
-	return &models.UserResponse{
-		ID:       user.UUID,
-		Name:     user.Name,
-		Email:    user.Email,
-		Role:     user.Role,
-		PhotoUrl: user.PhotoUrl,
-		Provider: user.Provider,
-		Verified: user.Verified,
+func MapVehicleImageToVehicleImageResponse(vehicleImage *models.VehicleImage) *models.VehicleImageResponse {
+	return &models.VehicleImageResponse{
+		ID:        vehicleImage.UUID,
+		ImageURL:  vehicleImage.ImageURL,
+		VehicleID: vehicleImage.VehicleID,
 	}
 }
