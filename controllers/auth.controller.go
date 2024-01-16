@@ -64,8 +64,6 @@ func (ac *AuthController) SignUpUser(ctx *gin.Context) {
 		return
 	}
 
-	config, _ := initializers.LoadConfig(".")
-
 	// Generate Verification Code
 	code := randstr.String(20)
 
@@ -83,7 +81,7 @@ func (ac *AuthController) SignUpUser(ctx *gin.Context) {
 
 	// ? Send Email
 	emailData := utils.EmailData{
-		URL:       config.ClientOrigin + "/auth/verify/" + code,
+		URL:       code,
 		FirstName: firstName,
 		Subject:   "Your account verification code",
 	}
