@@ -19,8 +19,10 @@ func init() {
 
 func main() {
 	err := initializers.DB.AutoMigrate(
-		&models.Company{},
+		&models.User{},
 		&models.Location{},
+		&models.Vehicle{},
+		&models.Company{},
 		&models.LoyaltyAccount{},
 		&models.Payment{},
 		&models.RentPaymentHistory{},
@@ -28,8 +30,6 @@ func main() {
 		&models.Subscription{},
 		&models.SubscriptionHistory{},
 		&models.SubscriptionType{},
-		&models.User{},
-		&models.Vehicle{},
 		&models.VehicleImage{},
 	)
 	if err != nil {

@@ -13,7 +13,7 @@ type RentPaymentHistory struct {
 	TotalAmount  float64   `gorm:"not null"`
 	PricePerHour float64   `gorm:"not null"`
 	PricePerDay  float64   `gorm:"not null"`
-	Duration     uint      `gorm:"not null"`
+	Duration     uint      `gorm:""`
 
 	CreatedAt time.Time `gorm:"not null"`
 	UpdatedAt time.Time `gorm:"not null"`

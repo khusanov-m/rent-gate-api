@@ -11,11 +11,11 @@ type User struct {
 	ID                 uint      `gorm:"primaryKey;autoIncrement"`
 	UUID               uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();uniqueIndex"`
 	Name               string    `gorm:"type:varchar(255);default:uuid_generate_v4();not null"`
-	Email              string    `gorm:"type:varchar(255);uniqueIndex;not null"`
+	Email              string    `gorm:"type:varchar(255);uniqueIndex"`
 	Password           string    `gorm:"not null"`
 	Role               string    `gorm:"type:varchar(255);default:'user';not null"`
-	Provider           string    `gorm:"type:varchar(255);not null"`
-	Photo              string    `gorm:"type:varchar(255);not null"`
+	Provider           string    `gorm:"type:varchar(255)"`
+	Photo              string    `gorm:"type:varchar(255)"`
 	VerificationCode   string    `gorm:"type:varchar(255)"`
 	PasswordResetToken string    `gorm:"type:varchar(255)"`
 	PasswordResetAt    time.Time

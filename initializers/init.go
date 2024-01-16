@@ -7,6 +7,10 @@ import (
 )
 
 type DBConfig struct {
+	Environment   string `mapstructure:"ENV"`
+	InternalDBURL string `mapstructure:"INTERNAL_DB_URL"`
+	ExternalDBURL string `mapstructure:"EXTERNAL_DB_URL"`
+
 	DBHost         string `mapstructure:"POSTGRES_HOST"`
 	DBUserName     string `mapstructure:"POSTGRES_USER"`
 	DBUserPassword string `mapstructure:"POSTGRES_PASSWORD"`
@@ -42,4 +46,3 @@ func LoadConfig(path string) (config DBConfig, err error) {
 	err = viper.Unmarshal(&config)
 	return
 }
-

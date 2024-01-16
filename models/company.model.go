@@ -11,8 +11,8 @@ type Company struct {
 	UUID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();uniqueIndex" json:"uuid,omitempty"`
 	Name        string    `gorm:"type:varchar(255);not null" json:"name,omitempty"`
 	Description string    `gorm:"type:text" json:"description,omitempty"`
-	Email       string    `gorm:"type:varchar(255);not null" json:"email,omitempty"`
-	Phone       string    `gorm:"type:varchar(255);not null" json:"phone,omitempty"`
+	Email       string    `gorm:"type:varchar(255)" json:"email,omitempty"`
+	Phone       string    `gorm:"type:varchar(255)" json:"phone,omitempty"`
 
 	CreatedAt time.Time      `gorm:"not null"`
 	UpdatedAt time.Time      `gorm:"not null"`

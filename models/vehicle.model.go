@@ -10,18 +10,18 @@ import (
 type Vehicle struct {
 	ID              uint      `gorm:"primaryKey;autoIncrement"`
 	UUID            uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();uniqueIndex"`
-	IsAvailable     bool      `gorm:"not null"`
-	DriverOption    string    `gorm:"type:varchar(100);not null"` // WithDriver, WithoutDriver, Both
-	PricePerHour    float64   `gorm:"not null"`
-	PricePerDay     float64   `gorm:"not null"`
-	Currency        string    `gorm:"type:varchar(100);not null"`
-	NumberOfSeats   uint16    `gorm:"not null"`
-	LuggageCapacity float32   `gorm:"not null"`
-	VehicleType     string    `gorm:"type:varchar(100);not null"` // Car, Motorbike, Bicycle, Boat, Plane
-	PowerType       string    `gorm:"type:varchar(100);not null"` // Petrol, Diesel, Electric, Hybrid
+	IsAvailable     bool
+	DriverOption    string  `gorm:"type:varchar(100)"` // WithDriver, WithoutDriver, Both
+	PricePerHour    float64 `gorm:"not null"`
+	PricePerDay     float64 `gorm:"not null"`
+	Currency        string  `gorm:"type:varchar(100);not null"`
+	NumberOfSeats   uint16
+	LuggageCapacity float32
+	VehicleType     string `gorm:"type:varchar(100)"` // Car, Motorbike, Bicycle, Boat, Plane
+	PowerType       string `gorm:"type:varchar(100)"` // Petrol, Diesel, Electric, Hybrid
 
-	OwnerType          string            `gorm:"type:varchar(100);not null"` // User, Company
-	OwnerID            uint              `gorm:"not null"`
+	OwnerType          string `gorm:"type:varchar(100);not null"` // User, Company
+	OwnerID            uint
 	Location           *Location         `gorm:"foreignkey:Identification"`
 	InSubscriptionType *SubscriptionType `gorm:"foreignkey:VehicleID"`
 	Images             []VehicleImage    `gorm:"foreignkey:VehicleID"`

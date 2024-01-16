@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -16,9 +17,9 @@ type Payment struct {
 	PaymentFor     string    `gorm:"type:varchar(255);not null"`
 	PaymentDetails uuid.UUID `gorm:"type:uuid"` // not connected by FK, but can be joined via UUID manually
 
-	CreatedAt time.Time `gorm:"not null"`
-	UpdatedAt time.Time `gorm:"not null"`
-	DeletedAt time.Time `gorm:"index"`
+	CreatedAt time.Time      `gorm:"not null"`
+	UpdatedAt time.Time      `gorm:"not null"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 type PaymentResponse struct {
