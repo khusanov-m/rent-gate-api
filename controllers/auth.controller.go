@@ -112,7 +112,7 @@ func (ac *AuthController) VerifyEmail(ctx *gin.Context) {
 		return
 	}
 
-	loyaltyInitResult := ac.DB.Create(models.LoyaltyAccount{
+	loyaltyInitResult := ac.DB.Create(&models.LoyaltyAccount{
 		UserID:    updatedUser.ID,
 		Points:    0,
 		Status:    "Iron",
