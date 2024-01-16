@@ -83,7 +83,7 @@ func (ac *AuthController) SignUpUser(ctx *gin.Context) {
 
 	// ? Send Email
 	emailData := utils.EmailData{
-		URL:       config.ClientOrigin + "/verifyemail/" + code,
+		URL:       config.ClientOrigin + "/auth/verify/" + code,
 		FirstName: firstName,
 		Subject:   "Your account verification code",
 	}
