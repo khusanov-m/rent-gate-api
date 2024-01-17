@@ -40,6 +40,9 @@ func init() {
 	VehiclesController = controllers.NewVehicleController(initializers.DB)
 	VehiclesRouteController = routes.NewRouteVehicleController(VehiclesController)
 
+	if config.Environment == "prod" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	server = gin.Default()
 }
 
