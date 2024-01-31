@@ -22,6 +22,17 @@ func NewUserController(DB *gorm.DB) UserController {
 func (uc *UserController) GetMe(ctx *gin.Context) {
 	currentUser := ctx.MustGet("currentUser").(models.User)
 	userResponse := utils.MapUserToUserResponse(&currentUser)
-
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": gin.H{"user": userResponse}})
+}
+
+func (uc *UserController) GetAllUsers(ctx *gin.Context) {
+	var users []models.User
+
+	if err := uc.DB.Find(&users).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": err.Error()})
+		return
+	}
+
+	usersResponse := utils.MapUsersToUsersResponse(&users)
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": usersResponse})
 }

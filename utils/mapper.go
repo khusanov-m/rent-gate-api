@@ -4,6 +4,13 @@ import (
 	"github.com/khusanov-m/rent-gate-api/models"
 )
 
+func MapUsersToUsersResponse(users *[]models.User) []models.UserResponse {
+	usersResponse := make([]models.UserResponse, len(*users))
+	for i, user := range *users {
+		usersResponse[i] = MapUserToUserResponse(&user)
+	}
+	return usersResponse
+}
 func MapUserToUserResponse(user *models.User) models.UserResponse {
 	// vehiclesResponse := MapVehiclesToVehicleResponses(&user.Vehicles)
 	// postsResponse := MapPostsToPostResponses(&user.Posts)
@@ -52,6 +59,9 @@ func MapVehicleToVehicleResponse(vehicle *models.Vehicle) models.VehicleResponse
 		OwnerType:       vehicle.OwnerType,
 		OwnerID:         vehicle.OwnerID,
 		Images:          *vehicleImagesResponse,
+		Model:           vehicle.Model,
+		Make:            vehicle.Make,
+		Color:           vehicle.Color,
 	}
 }
 

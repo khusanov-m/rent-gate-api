@@ -47,6 +47,9 @@ func (vc *VehicleController) CreateVehicle(ctx *gin.Context) {
 		PricePerHour:    payload.PricePerHour,
 		PricePerDay:     payload.PricePerDay,
 		Currency:        payload.Currency,
+		Model:           payload.Model,
+		Make:            payload.Make,
+		Color:           payload.Color,
 
 		OwnerType: currentUser.Role,
 		OwnerID:   currentUser.ID,
@@ -76,6 +79,58 @@ func (vc *VehicleController) CreateVehicle(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "data": newVehicleResponse})
 }
 
+// [...] Update Vehicle Handler
+func (vc *VehicleController) UpdateVehicle(ctx *gin.Context) {
+	postId := ctx.Param("vehicleId")
+	currentUser := ctx.MustGet("currentUser").(models.User)
+
+	var payload *models.UpdateVehicleInput
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "fail", "message": err.Error()})
+		return
+	}
+
+	var vehicle models.Vehicle
+	result := vc.DB.First(&vehicle, "uuid = ?", postId)
+	if result.Error != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No post with that title exists"})
+		return
+	}
+
+	if vehicle.OwnerID != currentUser.ID {
+		ctx.JSON(http.StatusForbidden, gin.H{"status": "fail", "message": "You are not authorized to update this post"})
+		return
+	}
+
+	var updatedVehicle models.Vehicle
+	vc.DB.First(&updatedVehicle, "uuid = ?", postId)
+
+	now := time.Now()
+	vehicleToUpdate := models.Vehicle{
+		IsAvailable:     payload.IsAvailable,
+		DriverOption:    payload.DriverOption,
+		NumberOfSeats:   payload.NumberOfSeats,
+		Color:           payload.Color,
+		Make:            payload.Make,
+		Model:           payload.Model,
+		Currency:        payload.Currency,
+		PowerType:       payload.PowerType,
+		PricePerDay:     payload.PricePerDay,
+		PricePerHour:    payload.PricePerHour,
+		VehicleType:     payload.VehicleType,
+		Images:          payload.Images,
+		LuggageCapacity: payload.LuggageCapacity,
+
+		CreatedAt: updatedVehicle.CreatedAt,
+		UpdatedAt: now,
+	}
+
+	vc.DB.Model(&updatedVehicle).Updates(vehicleToUpdate)
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": updatedVehicle})
+}
+
+// [...] Get Vehicles Handler
 func (vc *VehicleController) GetVehicles(ctx *gin.Context) {
 	var vehicles []models.Vehicle
 
@@ -91,6 +146,7 @@ func (vc *VehicleController) GetVehicles(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": gin.H{"vehicles": vehiclesResponse}})
 }
 
+// [...] Get Vehicle by ID Handler
 func (vc *VehicleController) GetVehicleByID(ctx *gin.Context) {
 	var vehicle models.Vehicle
 	id := ctx.Param("id")
@@ -104,4 +160,26 @@ func (vc *VehicleController) GetVehicleByID(ctx *gin.Context) {
 
 	vehicleResponse := utils.MapVehicleToVehicleResponse(&vehicle)
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": gin.H{"vehicle": vehicleResponse}})
+}
+
+// [...] Delete Post Handler
+func (vc *VehicleController) DeleteVehicle(ctx *gin.Context) {
+	currentUser := ctx.MustGet("currentUser").(models.User)
+	vehicleId := ctx.Param("vehicleId")
+
+	var vehicle models.Vehicle
+	result := vc.DB.First(&vehicle, "uuid = ?", vehicleId)
+	if result.Error != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No vehicle with indicated ID exists"})
+		return
+	}
+
+	if vehicle.OwnerID != currentUser.ID {
+		ctx.JSON(http.StatusForbidden, gin.H{"status": "fail", "message": "You are not authorized to delete this vehicle"})
+		return
+	}
+
+	vc.DB.Delete(&models.Vehicle{}, "uuid = ?", vehicleId)
+
+	ctx.JSON(http.StatusNoContent, nil)
 }
