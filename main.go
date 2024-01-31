@@ -21,6 +21,9 @@ var (
 
 	VehiclesController      controllers.VehicleController
 	VehiclesRouteController routes.VehicleRouteController
+
+	PaymentController      controllers.PaymentController
+	PaymentRouteController routes.PaymentRouteController
 )
 
 func init() {
@@ -39,6 +42,9 @@ func init() {
 
 	VehiclesController = controllers.NewVehicleController(initializers.DB)
 	VehiclesRouteController = routes.NewRouteVehicleController(VehiclesController)
+
+	PaymentController = controllers.NewPaymentController(initializers.DB)
+	PaymentRouteController = routes.NewPaymentRouteController(PaymentController)
 
 	if config.Environment == "prod" {
 		gin.SetMode(gin.ReleaseMode)
@@ -59,6 +65,7 @@ func main() {
 	server.Use(cors.New(corsConfig))
 
 	router := server.Group("/api/v1")
+	// PING method to check service status
 	router.GET("/ping", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": "pong"})
 	})
@@ -66,5 +73,6 @@ func main() {
 	AuthRouteController.AuthRoute(router)
 	UserRouteController.UserRoute(router)
 	VehiclesRouteController.VehicleRoute(router)
+	PaymentRouteController.PaymentRoute(router)
 	log.Fatal(server.Run(":" + config.ServerPort))
 }
