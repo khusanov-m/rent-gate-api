@@ -17,8 +17,8 @@ func NewPaymentRouteController(paymentController controllers.PaymentController) 
 func (pc *PaymentRouteController) PaymentRoute(rg *gin.RouterGroup) {
 	router := rg.Group("payments")
 	router.GET("/", middleware.DeserializeUser(), pc.paymentController.GetAllPayments)
-	//router.GET("/", middleware.DeserializeUser(), pc.paymentController.GetPaymentByID)
-	//router.POST("/", middleware.DeserializeUser(), pc.paymentController.CreatePayment)
-	//router.PUT("/:paymentId", middleware.DeserializeUser(), pc.paymentController.UpdatePayment)
-	//router.DELETE("/", middleware.DeserializeUser(), pc.paymentController.DeletePayment)
+	//router.GET("/:paymentId", middleware.DeserializeUser(), pc.paymentController.GetPaymentByID)
+	//router.POST("/:vehicleId", middleware.DeserializeUser(), pc.paymentController.CreatePayment)
+	//router.PUT("/:paymentId", middleware.DeserializeUser(), pc.paymentController.CancelPayment)
+	//router.DELETE("/:paymentId", middleware.DeserializeUser(), pc.paymentController.DeletePayment)
 }

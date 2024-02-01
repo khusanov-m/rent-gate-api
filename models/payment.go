@@ -14,12 +14,17 @@ type Payment struct {
 	PaymentStatus string    `gorm:"type:varchar(255);not null"`
 	PaymentType   string    `gorm:"type:varchar(255);not null"`
 
-	PaymentFor     string    `gorm:"type:varchar(255);not null"`
-	PaymentDetails uuid.UUID `gorm:"type:uuid"` // not connected by FK, but can be joined via UUID manually
+	PaymentFor     string    `gorm:"type:varchar(255);not null"` // rent, subscription
+	PaymentDetails uuid.UUID `gorm:"type:uuid"`                  // not connected by FK, but can be joined via UUID manually, UUID of vehicle
 
 	CreatedAt time.Time      `gorm:"not null"`
 	UpdatedAt time.Time      `gorm:"not null"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+
+type PaymentInput struct {
+	TotalHours  uint   `json:"total_hours"`
+	PaymentType string `json:"payment_type"`
 }
 
 type PaymentResponse struct {
