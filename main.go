@@ -24,6 +24,9 @@ var (
 
 	PaymentController      controllers.PaymentController
 	PaymentRouteController routes.PaymentRouteController
+
+	HistoryController      controllers.HistoryController
+	HistoryRouteController routes.HistoryRouteController
 )
 
 func init() {
@@ -46,10 +49,23 @@ func init() {
 	PaymentController = controllers.NewPaymentController(initializers.DB)
 	PaymentRouteController = routes.NewPaymentRouteController(PaymentController)
 
+	HistoryController = controllers.NewHistoryController(initializers.DB)
+	HistoryRouteController = routes.NewHistoryRouteController(HistoryController)
+
 	if config.Environment == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	server = gin.Default()
+
+	/*
+		Remove the below block if the production won't work
+	*/
+	// Disabling all proxy access for security reasons
+	server.ForwardedByClientIP = true
+	err = server.SetTrustedProxies([]string{"127.0.0.1"})
+	if err != nil {
+		return
+	}
 }
 
 func main() {
@@ -74,5 +90,6 @@ func main() {
 	UserRouteController.UserRoute(router)
 	VehiclesRouteController.VehicleRoute(router)
 	PaymentRouteController.PaymentRoute(router)
+	HistoryRouteController.HistoryRoute(router)
 	log.Fatal(server.Run(":" + config.ServerPort))
 }

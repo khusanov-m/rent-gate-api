@@ -2,6 +2,7 @@ package utils
 
 import (
 	"github.com/khusanov-m/rent-gate-api/models"
+	"math"
 )
 
 func MapUsersToUsersResponse(users *[]models.User) []models.UserResponse {
@@ -22,9 +23,9 @@ func MapUserToUserResponse(user *models.User) models.UserResponse {
 		Role:      user.Role,
 		Photo:     user.Photo,
 		Provider:  user.Provider,
+		Verified:  user.Verified,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
-		Verified:  user.Verified,
 		// Vehicles:       vehiclesResponse,
 		// Subscription:   user.Subscription,
 		// LoyaltyProgram: user.LoyaltyProgram,
@@ -46,8 +47,6 @@ func MapVehicleToVehicleResponse(vehicle *models.Vehicle) models.VehicleResponse
 		ID:              vehicle.UUID,
 		PricePerHour:    vehicle.PricePerHour,
 		PricePerDay:     vehicle.PricePerDay,
-		CreatedAt:       vehicle.CreatedAt,
-		UpdatedAt:       vehicle.UpdatedAt,
 		Location:        vehicle.Location,
 		IsAvailable:     vehicle.IsAvailable,
 		DriverOption:    vehicle.DriverOption,
@@ -62,6 +61,8 @@ func MapVehicleToVehicleResponse(vehicle *models.Vehicle) models.VehicleResponse
 		Model:           vehicle.Model,
 		Make:            vehicle.Make,
 		Color:           vehicle.Color,
+		CreatedAt:       vehicle.CreatedAt,
+		UpdatedAt:       vehicle.UpdatedAt,
 	}
 }
 
@@ -117,5 +118,25 @@ func MapVehicleImageToVehicleImageResponse(vehicleImage *models.VehicleImage) *m
 		ID:        vehicleImage.UUID,
 		ImageURL:  vehicleImage.ImageURL,
 		VehicleID: vehicleImage.VehicleID,
+	}
+}
+func MapPaymentsToPaymentsResponse(payments *[]models.Payment) []models.PaymentResponse {
+	paymentsRes := make([]models.PaymentResponse, len(*payments))
+	for i, payment := range *payments {
+		paymentsRes[i] = MapPaymentToPaymentResponse(&payment)
+	}
+	return paymentsRes
+}
+func MapPaymentToPaymentResponse(payment *models.Payment) models.PaymentResponse {
+	return models.PaymentResponse{
+		ID:             payment.UUID,
+		UserID:         payment.UserID,
+		Amount:         math.Ceil(payment.Amount*100) / 100,
+		PaymentStatus:  payment.PaymentStatus,
+		PaymentType:    payment.PaymentType,
+		PaymentFor:     payment.PaymentFor,
+		PaymentDetails: payment.PaymentDetails,
+		CreatedAt:      payment.CreatedAt,
+		UpdatedAt:      payment.UpdatedAt,
 	}
 }

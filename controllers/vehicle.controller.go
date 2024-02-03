@@ -105,7 +105,6 @@ func (vc *VehicleController) UpdateVehicle(ctx *gin.Context) {
 	var updatedVehicle models.Vehicle
 	vc.DB.First(&updatedVehicle, "uuid = ?", postId)
 
-	now := time.Now()
 	vehicleToUpdate := models.Vehicle{
 		IsAvailable:     payload.IsAvailable,
 		DriverOption:    payload.DriverOption,
@@ -122,7 +121,7 @@ func (vc *VehicleController) UpdateVehicle(ctx *gin.Context) {
 		LuggageCapacity: payload.LuggageCapacity,
 
 		CreatedAt: updatedVehicle.CreatedAt,
-		UpdatedAt: now,
+		UpdatedAt: time.Now(),
 	}
 
 	vc.DB.Model(&updatedVehicle).Updates(vehicleToUpdate)
@@ -143,7 +142,7 @@ func (vc *VehicleController) GetVehicles(ctx *gin.Context) {
 
 	vehiclesResponse := utils.MapVehiclesToVehicleResponses(&vehicles)
 
-	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": gin.H{"vehicles": vehiclesResponse}})
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": gin.H{"vehicles": vehiclesResponse, "count": len(vehiclesResponse)}})
 }
 
 // [...] Get Vehicle by ID Handler
@@ -159,7 +158,7 @@ func (vc *VehicleController) GetVehicleByID(ctx *gin.Context) {
 	}
 
 	vehicleResponse := utils.MapVehicleToVehicleResponse(&vehicle)
-	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": gin.H{"vehicle": vehicleResponse}})
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": vehicleResponse})
 }
 
 // [...] Delete Post Handler

@@ -37,9 +37,7 @@ func DeserializeUser() gin.HandlerFunc {
 			return
 		}
 
-		allowed := utils.PreloadEntities{
-			"Posts": true,
-		}
+		allowed := utils.PreloadEntities{} // Preloading specifically for getting user's data
 		query := utils.ApplyDynamicPreloading(initializers.DB, ctx, allowed)
 		var user models.User
 		result := query.First(&user, "id = ?", fmt.Sprint(sub))

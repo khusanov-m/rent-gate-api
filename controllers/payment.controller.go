@@ -21,6 +21,8 @@ type PaymentController struct {
 	DB *gorm.DB
 }
 
+var paymentAllowedEntities utils.PreloadEntities = utils.PreloadEntities{}
+
 func NewPaymentController(DB *gorm.DB) PaymentController {
 	return PaymentController{DB}
 }
@@ -41,8 +43,23 @@ func (pc *PaymentController) GetAllPayments(ctx *gin.Context) {
 		return
 	}
 
-	//postsResponse := utils.MapPaymentsToPayments(&payments)
-	ctx.JSON(http.StatusOK, gin.H{"status": "success", "results": len(payments), "data": payments})
+	paymentsResponse := utils.MapPaymentsToPaymentsResponse(&payments)
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": gin.H{"payments": paymentsResponse, "count": len(paymentsResponse)}})
+}
+
+func (pc *PaymentController) GetPaymentByID(ctx *gin.Context) {
+	var payment models.Payment
+	id := ctx.Param("paymentId")
+
+	query := utils.ApplyDynamicPreloading(pc.DB, ctx, paymentAllowedEntities)
+
+	if err := query.Where("uuid = ?", id).First(&payment).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": err.Error()})
+		return
+	}
+
+	paymentRes := utils.MapPaymentToPaymentResponse(&payment)
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": paymentRes})
 }
 
 func (pc *PaymentController) CreatePayment(ctx *gin.Context) {
@@ -99,4 +116,83 @@ func (pc *PaymentController) CreatePayment(ctx *gin.Context) {
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": result.Error.Error()})
 	}
+
+	newPaymentResponse := utils.MapPaymentToPaymentResponse(&newPayment)
+	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "data": newPaymentResponse})
+}
+
+func (pc *PaymentController) DeletePayment(ctx *gin.Context) {
+	currentUser := ctx.MustGet("currentUser").(models.User)
+	paymentId := ctx.Param("paymentId")
+
+	var payment models.Payment
+
+	if result := pc.DB.First(&payment, "uuid = ?", paymentId); result.Error != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": result.Error.Error()})
+		return
+	}
+
+	if payment.UserID != currentUser.ID {
+		ctx.JSON(http.StatusForbidden, gin.H{"status": "fail", "message": "You are not authorized to delete this payment"})
+		return
+	}
+
+	pc.DB.Delete(&models.Payment{}, "uuid = ?", paymentId)
+	ctx.JSON(http.StatusNoContent, nil)
+}
+
+func (pc *PaymentController) CancelPayment(ctx *gin.Context) {
+	paymentId := ctx.Param("paymentId")
+
+	var payment models.Payment
+	if result := pc.DB.First(&payment, "uuid = ?", paymentId); result.Error != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": result.Error.Error()})
+		return
+	}
+
+	if payment.PaymentStatus == "cancelled" {
+		ctx.JSON(http.StatusOK, gin.H{"status": "success", "code": "PAYMENT_ALREADY_CANCELLED", "message": "Payment have been already cancelled"})
+		return
+	}
+
+	currentUser := ctx.MustGet("currentUser").(models.User)
+	if payment.UserID != currentUser.ID {
+		ctx.JSON(http.StatusForbidden, gin.H{"status": "fail", "message": "You are not authorized to cancel this payment"})
+		return
+	}
+
+	paymentToUpdate := models.Payment{
+		PaymentStatus: "cancelled",
+		UpdatedAt:     time.Now(),
+	}
+	pc.DB.Model(&payment).Updates(paymentToUpdate)
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": payment})
+}
+
+func (pc *PaymentController) ConfirmPayment(ctx *gin.Context) {
+	paymentId := ctx.Param("paymentId")
+
+	var payment models.Payment
+	if result := pc.DB.First(&payment, "uuid = ?", paymentId); result.Error != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": result.Error.Error()})
+		return
+	}
+
+	if payment.PaymentStatus == "cancelled" {
+		ctx.JSON(http.StatusOK, gin.H{"status": "success", "code": "CAN_NOT_CONFIRM_CANCELLED", "message": "Cancelled payment can not be confirmed"})
+		return
+	}
+
+	currentUser := ctx.MustGet("currentUser").(models.User)
+	if payment.UserID != currentUser.ID {
+		ctx.JSON(http.StatusForbidden, gin.H{"status": "fail", "message": "You are not authorized to cancel this payment"})
+		return
+	}
+
+	paymentToUpdate := models.Payment{
+		PaymentStatus: "confirmed",
+		UpdatedAt:     time.Now(),
+	}
+	pc.DB.Model(&payment).Updates(paymentToUpdate)
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": payment})
 }

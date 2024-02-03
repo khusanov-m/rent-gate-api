@@ -2,22 +2,23 @@ package models
 
 import (
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"time"
 )
 
 type RentPaymentHistory struct {
 	ID           uint      `gorm:"primaryKey;autoIncrement"`
 	UUID         uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();uniqueIndex"`
-	VehicleID    uint      `gorm:"not null"`
+	VehicleID    uuid.UUID `gorm:"not null"`
 	UserID       uint      `gorm:"not null"`
 	TotalAmount  float64   `gorm:"not null"`
 	PricePerHour float64   `gorm:"not null"`
 	PricePerDay  float64   `gorm:"not null"`
 	Duration     uint      `gorm:""`
 
-	CreatedAt time.Time `gorm:"not null"`
-	UpdatedAt time.Time `gorm:"not null"`
-	DeletedAt time.Time `gorm:"index"`
+	CreatedAt time.Time      `gorm:"not null"`
+	UpdatedAt time.Time      `gorm:"not null"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 type RentPaymentHistoryInput struct {
