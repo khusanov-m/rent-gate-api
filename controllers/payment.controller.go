@@ -6,6 +6,7 @@ import (
 	"github.com/khusanov-m/rent-gate-api/models"
 	"github.com/khusanov-m/rent-gate-api/utils"
 	"gorm.io/gorm"
+	"math"
 	"net/http"
 	"strconv"
 	"time"
@@ -36,15 +37,35 @@ func (pc *PaymentController) GetAllPayments(ctx *gin.Context) {
 
 	query := utils.ApplyDynamicPreloading(pc.DB, ctx, paymentsAllowedEntities) // payments?preload=PaymentDetails
 
+	var totalItems int64
 	var payments []models.Payment
+
+	if err := query.Model(&models.Payment{}).Count(&totalItems).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Failed to count total items"})
+		return
+	}
+
 	results := query.Limit(pagination.Limit).Offset(pagination.Offset).Find(&payments)
 	if results.Error != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": results.Error})
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": results.Error.Error()})
 		return
 	}
 
 	paymentsResponse := utils.MapPaymentsToPaymentsResponse(&payments)
-	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": gin.H{"payments": paymentsResponse, "count": len(paymentsResponse)}})
+
+	totalPages := int(math.Ceil(float64(totalItems) / float64(pagination.Limit)))
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"data": gin.H{
+			"payments": paymentsResponse,
+			"count":    len(paymentsResponse),
+			"pagination": gin.H{
+				"totalPages": totalPages,
+				"totalItems": totalItems,
+			},
+		},
+	})
 }
 
 func (pc *PaymentController) GetPaymentByID(ctx *gin.Context) {

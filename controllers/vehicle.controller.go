@@ -3,6 +3,7 @@ package controllers
 // CAN PRELOAD: User
 
 import (
+	"math"
 	"net/http"
 	"strings"
 	"time"
@@ -131,18 +132,43 @@ func (vc *VehicleController) UpdateVehicle(ctx *gin.Context) {
 
 // [...] Get Vehicles Handler
 func (vc *VehicleController) GetVehicles(ctx *gin.Context) {
-	var vehicles []models.Vehicle
+	pagination, err := utils.NewPaginationFromQuery(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": err.Error()})
+		return
+	}
 
 	query := utils.ApplyDynamicPreloading(vc.DB, ctx, vehicleAllowedEntities)
 
-	if err := query.Find(&vehicles).Error; err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": err.Error()})
+	var totalItems int64
+	var vehicles []models.Vehicle
+
+	if err := query.Model(&models.Vehicle{}).Count(&totalItems).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Failed to count total items"})
+		return
+	}
+
+	results := query.Limit(pagination.Limit).Offset(pagination.Offset).Find(&vehicles)
+	if results.Error != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": results.Error.Error()})
 		return
 	}
 
 	vehiclesResponse := utils.MapVehiclesToVehicleResponses(&vehicles)
 
-	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": gin.H{"vehicles": vehiclesResponse, "count": len(vehiclesResponse)}})
+	totalPages := int(math.Ceil(float64(totalItems) / float64(pagination.Limit)))
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"data": gin.H{
+			"vehicles": vehiclesResponse,
+			"count":    len(vehiclesResponse),
+			"pagination": gin.H{
+				"totalPages": totalPages,
+				"totalItems": totalItems,
+			},
+		},
+	})
 }
 
 // [...] Get Vehicle by ID Handler
