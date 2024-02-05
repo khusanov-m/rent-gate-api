@@ -61,8 +61,8 @@ func (pc *PaymentController) GetAllPayments(ctx *gin.Context) {
 			"payments": paymentsResponse,
 			"count":    len(paymentsResponse),
 			"pagination": gin.H{
-				"totalPages": totalPages,
-				"totalItems": totalItems,
+				"total_pages": totalPages,
+				"total_items": totalItems,
 			},
 		},
 	})

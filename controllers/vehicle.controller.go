@@ -164,8 +164,8 @@ func (vc *VehicleController) GetVehicles(ctx *gin.Context) {
 			"vehicles": vehiclesResponse,
 			"count":    len(vehiclesResponse),
 			"pagination": gin.H{
-				"totalPages": totalPages,
-				"totalItems": totalItems,
+				"total_pages": totalPages,
+				"total_items": totalItems,
 			},
 		},
 	})
