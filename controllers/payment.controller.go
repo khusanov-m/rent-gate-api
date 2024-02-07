@@ -84,8 +84,6 @@ func (pc *PaymentController) GetPaymentByID(ctx *gin.Context) {
 }
 
 func (pc *PaymentController) CreatePayment(ctx *gin.Context) {
-	currentUser := ctx.MustGet("currentUser").(models.User)
-
 	var payload *models.PaymentInput
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": err.Error()})
@@ -94,7 +92,6 @@ func (pc *PaymentController) CreatePayment(ctx *gin.Context) {
 
 	id := ctx.Param("vehicleId")
 	vehicleId, err := uuid.Parse(id)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Invalid vehicle id"})
 		return
@@ -102,14 +99,12 @@ func (pc *PaymentController) CreatePayment(ctx *gin.Context) {
 
 	var vehicle models.Vehicle
 	vehicleRes := pc.DB.First(&vehicle, "uuid = ?", vehicleId)
-
 	if vehicleRes.Error != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No vehicle with indicated ID"})
 		return
 	}
 
 	var amount float64
-
 	if payload.TotalHours > 23 {
 		hours, _ := strconv.ParseFloat(strconv.Itoa(int(payload.TotalHours)), 64)
 		amount = vehicle.PricePerDay / 24 * hours
@@ -118,6 +113,7 @@ func (pc *PaymentController) CreatePayment(ctx *gin.Context) {
 		amount = vehicle.PricePerHour / 24 * hours
 	}
 
+	currentUser := ctx.MustGet("currentUser").(models.User)
 	newPayment := models.Payment{
 		UserID:         currentUser.ID,
 		Amount:         amount,
@@ -129,13 +125,29 @@ func (pc *PaymentController) CreatePayment(ctx *gin.Context) {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
-
 	result := pc.DB.Create(&newPayment)
-
-	// TODO: Add to the history of payments
-
 	if result.Error != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": result.Error.Error()})
+		return
+	}
+
+	newRentalRecord := models.RentPaymentHistory{
+		UserID:       currentUser.ID,
+		VehicleID:    vehicleId,
+		PaymentID:    newPayment.UUID,
+		TotalAmount:  amount,
+		PricePerHour: vehicle.PricePerHour,
+		PricePerDay:  vehicle.PricePerDay,
+		Duration:     payload.TotalHours,
+		Status:       "pending",
+
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+	rentalRecordResult := pc.DB.Create(&newRentalRecord)
+	if rentalRecordResult.Error != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": rentalRecordResult.Error.Error()})
+		return
 	}
 
 	newPaymentResponse := utils.MapPaymentToPaymentResponse(&newPayment)
@@ -182,11 +194,23 @@ func (pc *PaymentController) CancelPayment(ctx *gin.Context) {
 		return
 	}
 
+	// Checking where the payment exist or not
+	var paymentRecord models.RentPaymentHistory
+	if historyItem := pc.DB.First(&paymentRecord, "payment_id = ?", payment.UUID); historyItem.Error != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{"status": "fail", "message": "The payment you are cancelling is not existing"})
+		return
+	}
+
+	paymentRecordToUpdate := models.RentPaymentHistory{
+		Status:    "cancelled",
+		UpdatedAt: time.Now(),
+	}
 	paymentToUpdate := models.Payment{
 		PaymentStatus: "cancelled",
 		UpdatedAt:     time.Now(),
 	}
 	pc.DB.Model(&payment).Updates(paymentToUpdate)
+	pc.DB.Model(&paymentRecord).Updates(paymentRecordToUpdate)
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": payment})
 }
 
@@ -210,10 +234,21 @@ func (pc *PaymentController) ConfirmPayment(ctx *gin.Context) {
 		return
 	}
 
+	var paymentRecord models.RentPaymentHistory
+	if recordItem := pc.DB.First(&paymentRecord, "payment_id = ?", payment.UUID); recordItem.Error != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{"status": "fail", "message": recordItem.Error.Error()})
+		return
+	}
+
+	paymentRecordToUpdate := models.RentPaymentHistory{
+		Status:    "success",
+		UpdatedAt: time.Now(),
+	}
 	paymentToUpdate := models.Payment{
 		PaymentStatus: "confirmed",
 		UpdatedAt:     time.Now(),
 	}
 	pc.DB.Model(&payment).Updates(paymentToUpdate)
+	pc.DB.Model(&paymentRecord).Updates(paymentRecordToUpdate)
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": payment})
 }

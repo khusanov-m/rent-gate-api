@@ -20,10 +20,4 @@ func (hc *HistoryController) GetAllSubscriptionRecords(ctx *gin.Context) {}
 func (hc *HistoryController) GetAllRentalRecords(ctx *gin.Context) {}
 
 func (hc *HistoryController) GetRentalRecordByID(ctx *gin.Context) {}
-
-func (hc *HistoryController) CreateRentalRecord(ctx *gin.Context) {
-
-}
-
-func (hc *HistoryController) UpdateRentalRecord(ctx *gin.Context) {
-}
+func (hc *HistoryController) GetSubscriptionByID(ctx *gin.Context) {}

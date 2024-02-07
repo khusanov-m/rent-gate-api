@@ -22,7 +22,7 @@ func main() {
 		&models.User{},
 		&models.Location{},
 		&models.Vehicle{},
-		&models.Company{},
+		//&models.Company{},
 		&models.LoyaltyAccount{},
 		&models.Payment{},
 		&models.RentPaymentHistory{},

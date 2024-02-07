@@ -21,10 +21,9 @@ func (hc *HistoryRouteController) HistoryRoute(rg *gin.RouterGroup) {
 
 	subs := router.Group("subscription")
 	subs.GET("/", hc.historyController.GetAllSubscriptionRecords)
+	subs.GET("/:subscriptionId", hc.historyController.GetSubscriptionByID)
 
 	rent := router.Group("rental")
 	rent.GET("/", hc.historyController.GetAllRentalRecords)
 	rent.GET("/:rentId", hc.historyController.GetRentalRecordByID)
-	rent.POST("/", hc.historyController.CreateRentalRecord)
-	rent.PUT("/:rentId", hc.historyController.UpdateRentalRecord)
 }
