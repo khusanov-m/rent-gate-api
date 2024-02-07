@@ -241,7 +241,7 @@ func (pc *PaymentController) ConfirmPayment(ctx *gin.Context) {
 	}
 
 	paymentRecordToUpdate := models.RentPaymentHistory{
-		Status:    "success",
+		Status:    "confirmed",
 		UpdatedAt: time.Now(),
 	}
 	paymentToUpdate := models.Payment{
@@ -250,5 +250,6 @@ func (pc *PaymentController) ConfirmPayment(ctx *gin.Context) {
 	}
 	pc.DB.Model(&payment).Updates(paymentToUpdate)
 	pc.DB.Model(&paymentRecord).Updates(paymentRecordToUpdate)
+
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": payment})
 }

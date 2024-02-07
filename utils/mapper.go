@@ -140,3 +140,25 @@ func MapPaymentToPaymentResponse(payment *models.Payment) models.PaymentResponse
 		UpdatedAt:      payment.UpdatedAt,
 	}
 }
+
+func MapRentalsHistoryToRentalsHistoryResponse(history *[]models.RentPaymentHistory) []models.RentPaymentHistoryResponse {
+	historyRes := make([]models.RentPaymentHistoryResponse, len(*history))
+	for i, item := range *history {
+		historyRes[i] = MapRentalHistoryToRentalHistoryResponse(&item)
+	}
+	return historyRes
+}
+
+func MapRentalHistoryToRentalHistoryResponse(history *models.RentPaymentHistory) models.RentPaymentHistoryResponse {
+	return models.RentPaymentHistoryResponse{
+		ID:           history.UUID,
+		UserID:       history.UserID,
+		VehicleID:    history.VehicleID,
+		PaymentID:    history.PaymentID,
+		PricePerDay:  history.PricePerDay,
+		PricePerHour: history.PricePerHour,
+		Duration:     history.Duration,
+		Status:       history.Status,
+		TotalAmount:  history.TotalAmount,
+	}
+}

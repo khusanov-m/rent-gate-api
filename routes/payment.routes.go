@@ -20,7 +20,7 @@ func (pc *PaymentRouteController) PaymentRoute(rg *gin.RouterGroup) {
 	router.GET("/", pc.paymentController.GetAllPayments)
 	router.GET("/:paymentId", pc.paymentController.GetPaymentByID)
 	router.POST("/:vehicleId", pc.paymentController.CreatePayment)
-	router.POST("/:vehicleId/confirm", pc.paymentController.ConfirmPayment)
+	router.POST("/confirm/:paymentId", pc.paymentController.ConfirmPayment)
 	router.PUT("/:paymentId", pc.paymentController.CancelPayment)
 	router.DELETE("/:paymentId", pc.paymentController.DeletePayment)
 }

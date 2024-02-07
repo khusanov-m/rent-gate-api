@@ -5,6 +5,7 @@ package controllers
 import (
 	"math"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -138,7 +139,47 @@ func (vc *VehicleController) GetVehicles(ctx *gin.Context) {
 		return
 	}
 
-	query := utils.ApplyDynamicPreloading(vc.DB, ctx, vehicleAllowedEntities)
+	// Get filtering parameters from query string
+	priceFromStr := ctx.Query("price_from")
+	priceToStr := ctx.Query("price_to")
+	vehicleType := ctx.Query("vehicle_type")
+
+	// Convert price range parameters to float64
+	var priceFrom, priceTo float64
+	if priceFromStr != "" {
+		priceFrom, err = strconv.ParseFloat(priceFromStr, 64)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Invalid price_from parameter"})
+			return
+		}
+	}
+	if priceToStr != "" {
+		priceTo, err = strconv.ParseFloat(priceToStr, 64)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Invalid price_to parameter"})
+			return
+		}
+	}
+
+	query := vc.DB.Model(&models.Vehicle{})
+
+	query = utils.ApplyDynamicPreloading(vc.DB, ctx, vehicleAllowedEntities)
+
+	// Apply filters
+	if priceFrom > 0 && priceTo > 0 && priceFrom <= priceTo {
+		query = query.Where("price_per_day BETWEEN ? AND ?", priceFrom, priceTo)
+	} else {
+		if priceFrom > 0 {
+			query = query.Where("price_per_day >= ?", priceFrom)
+		}
+
+		if priceTo > 0 && priceTo >= priceFrom {
+			query = query.Where("price_per_day <= ?", priceTo)
+		}
+	}
+	if vehicleType != "" {
+		query = query.Where("vehicle_type = ?", vehicleType)
+	}
 
 	var totalItems int64
 	var vehicles []models.Vehicle

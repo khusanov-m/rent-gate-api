@@ -25,6 +25,9 @@ type RentPaymentHistory struct {
 
 type RentPaymentHistoryResponse struct {
 	ID           uuid.UUID `json:"id,omitempty"`
+	UserID       uint      `json:"user_id,omitempty"`
+	VehicleID    uuid.UUID `json:"vehicle_id,omitempty"`
+	PaymentID    uuid.UUID `json:"payment_id,omitempty"`
 	TotalAmount  float64   `json:"total_amount,omitempty"`
 	PricePerHour float64   `json:"price_per_hour,omitempty"`
 	PricePerDay  float64   `json:"price_per_day,omitempty"`
