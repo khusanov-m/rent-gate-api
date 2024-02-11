@@ -56,7 +56,11 @@ func init() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	server = gin.Default()
-
+	server.Use(corsMiddleware())
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowOrigins = []string{"http://localhost:8000", "http://localhost:3000", config.ClientOrigin}
+	corsConfig.AllowCredentials = true
+	server.Use(cors.New(corsConfig))
 	/*
 		Remove the below block if the production won't work
 	*/
@@ -73,13 +77,6 @@ func main() {
 	if err != nil {
 		log.Fatal("? Could not load environment variables", err)
 	}
-
-	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowOrigins = []string{"http://localhost:8000", "http://localhost:3000", config.ClientOrigin}
-	corsConfig.AllowCredentials = true
-
-	server.Use(cors.New(corsConfig))
-
 	router := server.Group("/api/v1")
 	// PING method to check service status
 	router.GET("/ping", func(ctx *gin.Context) {
@@ -92,4 +89,19 @@ func main() {
 	PaymentRouteController.PaymentRoute(router)
 	HistoryRouteController.HistoryRoute(router)
 	log.Fatal(server.Run(":" + config.ServerPort))
+}
+
+func corsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
 }

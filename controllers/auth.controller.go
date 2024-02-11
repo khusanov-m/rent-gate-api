@@ -193,7 +193,7 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 	var user models.User
 	result := ac.DB.First(&user, "email = ?", strings.ToLower(payload.Email))
 	if result.Error != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": "Invalid email or Password"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": "Invalid email provided"})
 		return
 	}
 
