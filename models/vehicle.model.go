@@ -27,7 +27,7 @@ type Vehicle struct {
 	OwnerID            uint
 	Location           *Location         `gorm:"foreignkey:Identification"`
 	InSubscriptionType *SubscriptionType `gorm:"foreignkey:VehicleID"`
-	Images             []VehicleImage    `gorm:"foreignkey:VehicleID"`
+	Image              string
 
 	CreatedAt time.Time      `gorm:"not null"`
 	UpdatedAt time.Time      `gorm:"not null"`
@@ -35,35 +35,35 @@ type Vehicle struct {
 }
 
 type CreateVehicleInput struct {
-	IsAvailable     bool           `json:"is_available"`
-	DriverOption    string         `json:"driver_option" binding:"required"`
-	PricePerHour    float64        `json:"price_per_hour" binding:"required"`
-	PricePerDay     float64        `json:"price_per_day" binding:"required"`
-	Currency        string         `json:"currency" binding:"required"`
-	NumberOfSeats   uint16         `json:"number_of_seats" binding:"required"`
-	LuggageCapacity float32        `json:"luggage_capacity" binding:"required"`
-	VehicleType     string         `json:"vehicle_type" binding:"required"`
-	PowerType       string         `json:"power_type" binding:"required"`
-	Images          []VehicleImage `json:"images" binding:"required"`
-	Make            string         `json:"make"`
-	Model           string         `json:"model"`
-	Color           string         `json:"color"`
+	IsAvailable     bool    `json:"is_available"`
+	DriverOption    string  `json:"driver_option" binding:"required"`
+	PricePerHour    float64 `json:"price_per_hour" binding:"required"`
+	PricePerDay     float64 `json:"price_per_day" binding:"required"`
+	Currency        string  `json:"currency" binding:"required"`
+	NumberOfSeats   uint16  `json:"number_of_seats" binding:"required"`
+	LuggageCapacity float32 `json:"luggage_capacity" binding:"required"`
+	VehicleType     string  `json:"vehicle_type" binding:"required"`
+	PowerType       string  `json:"power_type" binding:"required"`
+	Image           string  `json:"image" binding:"required"`
+	Make            string  `json:"make"`
+	Model           string  `json:"model"`
+	Color           string  `json:"color"`
 }
 
 type UpdateVehicleInput struct {
-	IsAvailable     bool           `json:"is_available"`
-	DriverOption    string         `json:"driver_option"`
-	PricePerHour    float64        `json:"price_per_hour"`
-	PricePerDay     float64        `json:"price_per_day"`
-	Currency        string         `json:"currency"`
-	NumberOfSeats   uint16         `json:"number_of_seats"`
-	LuggageCapacity float32        `json:"luggage_capacity"`
-	VehicleType     string         `json:"vehicle_type"`
-	PowerType       string         `json:"power_type"`
-	Images          []VehicleImage `json:"images"`
-	Make            string         `json:"make"`
-	Model           string         `json:"model"`
-	Color           string         `json:"color"`
+	IsAvailable     bool    `json:"is_available"`
+	DriverOption    string  `json:"driver_option"`
+	PricePerHour    float64 `json:"price_per_hour"`
+	PricePerDay     float64 `json:"price_per_day"`
+	Currency        string  `json:"currency"`
+	NumberOfSeats   uint16  `json:"number_of_seats"`
+	LuggageCapacity float32 `json:"luggage_capacity"`
+	VehicleType     string  `json:"vehicle_type"`
+	PowerType       string  `json:"power_type"`
+	Image           string  `json:"image"`
+	Make            string  `json:"make"`
+	Model           string  `json:"model"`
+	Color           string  `json:"color"`
 }
 
 type VehicleResponse struct {
@@ -81,11 +81,11 @@ type VehicleResponse struct {
 	Model           string    `json:"model,omitempty"`
 	Color           string    `json:"color,omitempty"`
 
-	OwnerType          string                 `json:"owner_type"`
-	OwnerID            uint                   `json:"owner_id"`
-	Location           *Location              `json:"location"`
-	InSubscriptionType *SubscriptionType      `json:"in_subscription_type"`
-	Images             []VehicleImageResponse `json:"images"`
+	OwnerType          string            `json:"owner_type"`
+	OwnerID            uint              `json:"owner_id"`
+	Location           *Location         `json:"location"`
+	InSubscriptionType *SubscriptionType `json:"in_subscription_type"`
+	Image              string            `json:"image"`
 
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	UpdatedAt time.Time `json:"updated_at,omitempty"`

@@ -30,7 +30,6 @@ func main() {
 		&models.Subscription{},
 		&models.SubscriptionHistory{},
 		&models.SubscriptionType{},
-		&models.VehicleImage{},
 	)
 	if err != nil {
 		panic("failed to auto-migrate")
