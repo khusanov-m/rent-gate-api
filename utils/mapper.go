@@ -41,8 +41,6 @@ func MapVehiclesToVehicleResponses(vehicles *[]models.Vehicle) []models.VehicleR
 	return vehiclesResponse
 }
 func MapVehicleToVehicleResponse(vehicle *models.Vehicle) models.VehicleResponse {
-	vehicleImagesResponse := MapVehicleImagesToVehicleImagesResponse(&vehicle.Images)
-
 	return models.VehicleResponse{
 		ID:              vehicle.UUID,
 		PricePerHour:    vehicle.PricePerHour,
@@ -57,7 +55,7 @@ func MapVehicleToVehicleResponse(vehicle *models.Vehicle) models.VehicleResponse
 		Currency:        vehicle.Currency,
 		OwnerType:       vehicle.OwnerType,
 		OwnerID:         vehicle.OwnerID,
-		Images:          *vehicleImagesResponse,
+		Image:           vehicle.Image,
 		Model:           vehicle.Model,
 		Make:            vehicle.Make,
 		Color:           vehicle.Color,
@@ -106,20 +104,6 @@ func MapVehicleToVehicleResponse(vehicle *models.Vehicle) models.VehicleResponse
 //	}
 //}
 
-func MapVehicleImagesToVehicleImagesResponse(vehicleImages *[]models.VehicleImage) *[]models.VehicleImageResponse {
-	vehicleImagesResponse := make([]models.VehicleImageResponse, len(*vehicleImages))
-	for i, image := range *vehicleImages {
-		vehicleImagesResponse[i] = *MapVehicleImageToVehicleImageResponse(&image)
-	}
-	return &vehicleImagesResponse
-}
-func MapVehicleImageToVehicleImageResponse(vehicleImage *models.VehicleImage) *models.VehicleImageResponse {
-	return &models.VehicleImageResponse{
-		ID:        vehicleImage.UUID,
-		ImageURL:  vehicleImage.ImageURL,
-		VehicleID: vehicleImage.VehicleID,
-	}
-}
 func MapPaymentsToPaymentsResponse(payments *[]models.Payment) []models.PaymentResponse {
 	paymentsRes := make([]models.PaymentResponse, len(*payments))
 	for i, payment := range *payments {

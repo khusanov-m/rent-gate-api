@@ -52,6 +52,7 @@ func (vc *VehicleController) CreateVehicle(ctx *gin.Context) {
 		Model:           payload.Model,
 		Make:            payload.Make,
 		Color:           payload.Color,
+		Image:           payload.Image,
 
 		OwnerType: currentUser.Role,
 		OwnerID:   currentUser.ID,
@@ -67,14 +68,6 @@ func (vc *VehicleController) CreateVehicle(ctx *gin.Context) {
 	} else if result.Error != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": result.Error.Error()})
 		return
-	}
-
-	for _, image := range payload.Images {
-		vehicleImage := models.VehicleImage{
-			VehicleID: newVehicle.ID,
-			ImageURL:  image.ImageURL,
-		}
-		vc.DB.Create(&vehicleImage)
 	}
 
 	newVehicleResponse := utils.MapVehicleToVehicleResponse(&newVehicle)
@@ -119,7 +112,7 @@ func (vc *VehicleController) UpdateVehicle(ctx *gin.Context) {
 		PricePerDay:     payload.PricePerDay,
 		PricePerHour:    payload.PricePerHour,
 		VehicleType:     payload.VehicleType,
-		Images:          payload.Images,
+		Image:           payload.Image,
 		LuggageCapacity: payload.LuggageCapacity,
 
 		CreatedAt: updatedVehicle.CreatedAt,
