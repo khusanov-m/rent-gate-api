@@ -22,7 +22,7 @@ func NewUserController(DB *gorm.DB) UserController {
 func (uc *UserController) GetMe(ctx *gin.Context) {
 	currentUser := ctx.MustGet("currentUser").(models.User)
 	userResponse := utils.MapUserToUserResponse(&currentUser)
-	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": gin.H{"user": userResponse}})
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "user": userResponse})
 }
 
 func (uc *UserController) GetAllUsers(ctx *gin.Context) {
@@ -34,5 +34,5 @@ func (uc *UserController) GetAllUsers(ctx *gin.Context) {
 	}
 
 	usersResponse := utils.MapUsersToUsersResponse(&users)
-	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": usersResponse})
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "users": usersResponse})
 }

@@ -24,6 +24,6 @@ func (hc *HistoryRouteController) HistoryRoute(rg *gin.RouterGroup) {
 	//subs.GET("/:subscriptionId", hc.historyController.GetSubscriptionByID)
 
 	rent := router.Group("rental")
-	rent.GET("/", hc.historyController.GetAllRentalRecords)
+	rent.GET("", hc.historyController.GetAllRentalRecords)
 	rent.GET("/:rentId", hc.historyController.GetRentalRecordByID)
 }

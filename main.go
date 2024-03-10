@@ -1,14 +1,12 @@
 package main
 
 import (
-	"log"
-	"net/http"
-
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/khusanov-m/rent-gate-api/controllers"
 	"github.com/khusanov-m/rent-gate-api/initializers"
 	"github.com/khusanov-m/rent-gate-api/routes"
+	"log"
+	"net/http"
 )
 
 var (
@@ -57,19 +55,6 @@ func init() {
 	}
 	server = gin.Default()
 	server.Use(corsMiddleware())
-	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowOrigins = []string{"http://localhost:8000", "http://localhost:3000", config.ClientOrigin}
-	corsConfig.AllowCredentials = true
-	server.Use(cors.New(corsConfig))
-	/*
-		Remove the below block if the production won't work
-	*/
-	// Disabling all proxy access for security reasons
-	server.ForwardedByClientIP = true
-	err = server.SetTrustedProxies([]string{"127.0.0.1"})
-	if err != nil {
-		return
-	}
 }
 
 func main() {

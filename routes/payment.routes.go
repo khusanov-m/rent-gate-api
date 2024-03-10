@@ -17,7 +17,7 @@ func NewPaymentRouteController(paymentController controllers.PaymentController) 
 func (pc *PaymentRouteController) PaymentRoute(rg *gin.RouterGroup) {
 	router := rg.Group("payments")
 	router.Use(middleware.DeserializeUser())
-	router.GET("/", pc.paymentController.GetAllPayments)
+	router.GET("", pc.paymentController.GetAllPayments)
 	router.GET("/:paymentId", pc.paymentController.GetPaymentByID)
 	router.POST("/:vehicleId", pc.paymentController.CreatePayment)
 	router.POST("/confirm/:paymentId", pc.paymentController.ConfirmPayment)
