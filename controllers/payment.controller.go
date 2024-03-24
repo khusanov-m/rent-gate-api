@@ -110,8 +110,10 @@ func (pc *PaymentController) CreatePayment(ctx *gin.Context) {
 		amount = vehicle.PricePerDay / 24 * hours
 	} else {
 		hours, _ := strconv.ParseFloat(strconv.Itoa(int(payload.TotalHours)), 64)
-		amount = vehicle.PricePerHour / 24 * hours
+		amount = vehicle.PricePerHour * hours
 	}
+
+	amount = amount + payload.AddonsWithDiscountPrice
 
 	currentUser := ctx.MustGet("currentUser").(models.User)
 	newPayment := models.Payment{

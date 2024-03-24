@@ -23,8 +23,9 @@ type Payment struct {
 }
 
 type PaymentInput struct {
-	TotalHours  uint   `json:"total_hours"`
-	PaymentType string `json:"payment_type"`
+	TotalHours              uint    `json:"total_hours"`
+	AddonsWithDiscountPrice float64 `json:"addons_with_discount_price"`
+	PaymentType             string  `json:"payment_type"`
 }
 
 type PaymentResponse struct {

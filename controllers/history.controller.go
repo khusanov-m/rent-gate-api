@@ -77,12 +77,24 @@ func (hc *HistoryController) GetAllRentalRecords(ctx *gin.Context) {
 	}
 
 	results := query.Limit(pagination.Limit).Offset(pagination.Offset).Find(&rentals)
+
 	if results.Error != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": results.Error.Error()})
 		return
 	}
 
-	rentalRecords := utils.MapRentalsHistoryToRentalsHistoryResponse(&rentals)
+	// filter &rentals by user_id
+	currentUser := ctx.MustGet("currentUser").(models.User)
+
+	var filteredRentals []models.RentPaymentHistory
+	for _, rental := range rentals {
+		if rental.UserID == currentUser.ID {
+			filteredRentals = append(filteredRentals, rental)
+		}
+
+	}
+
+	rentalRecords := utils.MapRentalsHistoryToRentalsHistoryResponse(&filteredRentals)
 	totalPages := int(math.Ceil(float64(totalItems) / float64(pagination.Limit)))
 
 	ctx.JSON(http.StatusOK, gin.H{
@@ -99,7 +111,7 @@ func (hc *HistoryController) GetAllRentalRecords(ctx *gin.Context) {
 
 func (hc *HistoryController) GetRentalRecordByID(ctx *gin.Context) {
 	var rentalRecord models.RentPaymentHistory
-	id := ctx.Param("rentalId")
+	id := ctx.Param("rentId")
 	query := utils.ApplyDynamicPreloading(hc.DB, ctx, historyAllowedEntities)
 
 	if err := query.Where("uuid = ?", id).First(&rentalRecord).Error; err != nil {
@@ -107,8 +119,36 @@ func (hc *HistoryController) GetRentalRecordByID(ctx *gin.Context) {
 		return
 	}
 
+	currentUser := ctx.MustGet("currentUser").(models.User)
+	if rentalRecord.UserID != currentUser.ID {
+		ctx.JSON(http.StatusForbidden, gin.H{"status": "error", "message": "You are not allowed to view this record"})
+		return
+	}
 	rentalResponse := utils.MapRentalHistoryToRentalHistoryResponse(&rentalRecord)
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": rentalResponse})
 }
 
 //func (hc *HistoryController) GetSubscriptionByID(ctx *gin.Context) {}
+
+// delete method
+func (hc *HistoryController) DeleteRentalRecord(ctx *gin.Context) {
+	currentUser := ctx.MustGet("currentUser").(models.User)
+
+	rentId := ctx.Param("rentId")
+	var rentalRecord models.RentPaymentHistory
+
+	result := hc.DB.First(&rentalRecord, "uuid = ?", rentId)
+	if result.Error != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No rental record with indicated ID exists"})
+		return
+	}
+
+	if rentalRecord.UserID != currentUser.ID {
+		ctx.JSON(http.StatusForbidden, gin.H{"status": "fail", "message": "You are not authorized to delete this rental record"})
+		return
+	}
+
+	hc.DB.Delete(&models.RentPaymentHistory{}, "uuid = ?", rentId)
+
+	ctx.JSON(http.StatusNoContent, nil)
+}

@@ -26,4 +26,5 @@ func (hc *HistoryRouteController) HistoryRoute(rg *gin.RouterGroup) {
 	rent := router.Group("rental")
 	rent.GET("", hc.historyController.GetAllRentalRecords)
 	rent.GET("/:rentId", hc.historyController.GetRentalRecordByID)
+	rent.DELETE("/:rentId", hc.historyController.DeleteRentalRecord)
 }
