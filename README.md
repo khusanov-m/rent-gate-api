@@ -2,7 +2,7 @@
 
 BISP Project - Diploma Work for WIUT - Backend
 
-“A project undertaken as part of BSc (Hons) Business Information Systems Degree, Westminster International University in Tashkent"
+## “A project undertaken as part of BSc (Hons) Business Information Systems Degree, Westminster International University in Tashkent"
 
 ## Project setup
 
